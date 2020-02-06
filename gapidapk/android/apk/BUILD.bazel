@@ -19,6 +19,7 @@ _NATIVE_LIBRARIES = {
     "VkLayer_VirtualSwapchain": "//core/vulkan/vk_virtual_swapchain/apk",
     "VkLayer_CPUTiming": "//core/vulkan/vk_api_timing_layer/apk",
     "VkLayer_MemoryTracker": "//core/vulkan/vk_memory_tracker_layer/apk",
+    "VkLayer_advance_portability": "//core/vulkan/vk_advance_portability_layer/apk",
     "gapii": "//gapii/apk",
     "interceptor": "//gapii/apk",
     "VkLayer_GraphicsSpy": "//gapii/apk",

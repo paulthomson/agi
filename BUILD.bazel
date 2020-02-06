@@ -188,6 +188,8 @@ copy_to(
     srcs = [
         "//core/vulkan/vk_virtual_swapchain/cc:json",
         "//core/vulkan/vk_virtual_swapchain/cc:libVkLayer_VirtualSwapchain",
+        "//core/vulkan/vk_advance_portability_layer/cc:json",
+        "//core/vulkan/vk_advance_portability_layer/cc:libVkLayer_advance_portability",
         "//gapic:gapic_deploy.jar",
         "//gapii/cc:libgapii",
         "//gapii/vulkan/vk_graphics_spy/cc:json",

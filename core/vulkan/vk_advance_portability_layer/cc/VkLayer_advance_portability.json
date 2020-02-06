@@ -1,0 +1,15 @@
+{
+  "file_format_version" : "1.1.0",
+  "layer": {
+    "name": "VK_LAYER_ADVANCE_portability",
+    "type": "GLOBAL",
+    "library_path": "libVkLayer_advance_portability.so",
+    "api_version" : "1.1.126",
+    "implementation_version" : "1",
+    "description" : "ADVANCE Portability Layer",
+    "functions": {
+      "vkGetDeviceProcAddr": "VK_LAYER_ADVANCE_portabilityGetDeviceProcAddr",
+      "vkGetInstanceProcAddr": "VK_LAYER_ADVANCE_portabilityGetInstanceProcAddr"
+    }
+  }
+}

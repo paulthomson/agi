@@ -102,6 +102,8 @@ go_stripped_binary(
         "//core/vulkan/vk_memory_tracker_layer/cc:libVkLayer_MemoryTracker",
         "//core/vulkan/vk_virtual_swapchain/cc:json",
         "//core/vulkan/vk_virtual_swapchain/cc:libVkLayer_VirtualSwapchain",
+        "//core/vulkan/vk_advance_portability_layer/cc:json",
+        "//core/vulkan/vk_advance_portability_layer/cc:libVkLayer_advance_portability",
         "//gapii/cc:libgapii",
         "//gapii/vulkan/vk_graphics_spy/cc:json",
         "//gapis/messages:stb",

@@ -64,6 +64,8 @@ go_test(
         "//cmd/gapir/cc:gapir",
         "//core/vulkan/vk_virtual_swapchain/cc:json",
         "//core/vulkan/vk_virtual_swapchain/cc:libVkLayer_VirtualSwapchain",
+        "//core/vulkan/vk_advance_portability_layer/cc:json",
+        "//core/vulkan/vk_advance_portability_layer/cc:libVkLayer_advance_portability",
     ],
     embed = [":go_default_library"],
     tags = [
