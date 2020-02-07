@@ -501,8 +501,6 @@ VKAPI_ATTR VkResult VKAPI_CALL vkCreateDevice(
 
   // Grab the fpGetInstanceProcAddr from the layer_info. We will get
   // vkCreateDevice from this.
-  // Note: we cannot use our instance_map because we do not have a
-  // vkInstance here.
   PFN_vkGetInstanceProcAddr get_instance_proc_addr =
       layer_info->u.pLayerInfo->pfnNextGetInstanceProcAddr;
 
