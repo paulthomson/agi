@@ -113,16 +113,6 @@ func SetupTrace(ctx context.Context, d bind.Device, abi *device.ABI, env *shell.
 	if err != nil {
 		return nil, "", err
 	}
-
-	lib, json, err := findLibraryAndJSON(ctx, setup, tempdir, layout.LibGraphicsSpy)
-	var f string
-	if err != nil {
-		return cleanup.Invoke(ctx), f, err
-	}
-	err = setupJSON(ctx, lib, json, setup, tempdir, env)
-	if err != nil {
-		return cleanup.Invoke(ctx), "", err
-	}
 	env.AddPathStart("VK_LAYER_PATH", tempdir)
 
 	f, c, err := d.TempFile(ctx)
@@ -130,10 +120,36 @@ func SetupTrace(ctx context.Context, d bind.Device, abi *device.ABI, env *shell.
 		return cleanup.Invoke(ctx), "", err
 	}
 	cleanup = cleanup.Then(c)
-	env.Set("LD_PRELOAD", lib).
-		AddPathStart("VK_INSTANCE_LAYERS", "GraphicsSpy").
-		AddPathStart("VK_DEVICE_LAYERS", "GraphicsSpy").
-		Set("GAPII_PORT_FILE", f)
+	env.Set("GAPII_PORT_FILE", f)
+
+	// Add Vulkan layers.
+	layers := []layout.LibraryType{layout.LibGraphicsSpy, layout.LibAdvancePortability}
+	for _, layerLibraryType := range layers {
+
+		lib, json, err := findLibraryAndJSON(ctx, setup, tempdir, layerLibraryType)
+		if err != nil {
+			return cleanup.Invoke(ctx), "", err
+		}
+
+		// Special case for LibGraphicsSpy: add it to LD_PRELOAD.
+		if layerLibraryType == layout.LibGraphicsSpy {
+			env.AddPathStart("LD_PRELOAD", lib)
+		}
+
+		err = setupJSON(ctx, lib, json, setup, tempdir, env)
+		if err != nil {
+			return cleanup.Invoke(ctx), "", err
+		}
+
+		layerName, err := layout.LayerNameFromLibraryType(layerLibraryType)
+		if err != nil {
+			return cleanup.Invoke(ctx), "", err
+		}
+		env.AddPathStart("VK_INSTANCE_LAYERS", layerName)
+		// The VK_DEVICE_LAYERS env var is deprecated, but it does not hurt to set it.
+		env.AddPathStart("VK_DEVICE_LAYERS", layerName)
+	}
+
 	if abi.OS == device.Windows {
 		// Adds the extra MSYS DLL dependencies onto the path.
 		// TODO: remove this hacky work-around.
@@ -143,6 +159,7 @@ func SetupTrace(ctx context.Context, d bind.Device, abi *device.ABI, env *shell.
 			env.AddPathStart("PATH", gapit.Parent().System())
 		}
 	}
+
 	return cleanup, f, err
 }
 

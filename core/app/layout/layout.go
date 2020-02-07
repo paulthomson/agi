@@ -41,6 +41,7 @@ const (
 	LibVirtualSwapChain
 	LibCPUTiming
 	LibMemoryTracker
+	LibAdvancePortability
 )
 
 // FileLayout provides a unified way of accessing various Gapid binaries.
@@ -75,16 +76,26 @@ func withExecutablePlatformSuffix(exe string, os device.OSKind) string {
 }
 
 var libTypeToName = map[LibraryType]string{
-	LibGraphicsSpy:      "libgapii",
-	LibVirtualSwapChain: "libVkLayer_VirtualSwapchain",
-	LibCPUTiming:        "libVkLayer_CPUTiming",
-	LibMemoryTracker:    "libVkLayer_MemoryTracker",
+	LibGraphicsSpy:        "libgapii",
+	LibVirtualSwapChain:   "libVkLayer_VirtualSwapchain",
+	LibCPUTiming:          "libVkLayer_CPUTiming",
+	LibMemoryTracker:      "libVkLayer_MemoryTracker",
+	LibAdvancePortability: "libVkLayer_advance_portability",
 }
 
 var layerNameToLibType = map[string]LibraryType{
-	"VirtualSwapchain": LibVirtualSwapChain,
-	"CPUTiming":        LibCPUTiming,
-	"MemoryTracker":    LibMemoryTracker,
+	"VirtualSwapchain":             LibVirtualSwapChain,
+	"CPUTiming":                    LibCPUTiming,
+	"MemoryTracker":                LibMemoryTracker,
+	"VK_LAYER_ADVANCE_portability": LibAdvancePortability,
+}
+
+var libTypeToLayerName = map[LibraryType]string{
+	LibGraphicsSpy:        "GraphicsSpy",
+	LibVirtualSwapChain:   "VirtualSwapchain",
+	LibCPUTiming:          "CPUTiming",
+	LibMemoryTracker:      "MemoryTracker",
+	LibAdvancePortability: "VK_LAYER_ADVANCE_portability",
 }
 
 var dataSourceNameToLayerName = map[string]string{
@@ -95,10 +106,11 @@ var dataSourceNameToLayerName = map[string]string{
 }
 
 var libTypeToJson = map[LibraryType]string{
-	LibGraphicsSpy:      "GraphicsSpyLayer.json",
-	LibVirtualSwapChain: "VirtualSwapchainLayer.json",
-	LibCPUTiming:        "CPUTimingLayer.json",
-	LibMemoryTracker:    "MemoryTrackerLayer.json",
+	LibGraphicsSpy:        "GraphicsSpyLayer.json",
+	LibVirtualSwapChain:   "VirtualSwapchainLayer.json",
+	LibCPUTiming:          "CPUTimingLayer.json",
+	LibMemoryTracker:      "MemoryTrackerLayer.json",
+	LibAdvancePortability: "VkLayer_advance_portability.json",
 }
 
 func withLibraryPlatformSuffix(lib string, os device.OSKind) string {
@@ -131,6 +143,14 @@ func LibraryFromLayerName(name string) (LibraryType, error) {
 		return v, nil
 	}
 	return -1, fmt.Errorf("Invalid Layer Name %s", name)
+}
+
+// Returns a layer name given a LibraryType
+func LayerNameFromLibraryType(libraryType LibraryType) (string, error) {
+	if v, ok := libTypeToLayerName[libraryType]; ok {
+		return v, nil
+	}
+	return "", fmt.Errorf("invalid LibraryType %d", libraryType)
 }
 
 func AllLayers() []string {
@@ -263,17 +283,19 @@ var abiToApkPath = map[device.Architecture]string{
 }
 
 var libTypeToLibPath = map[LibraryType]string{
-	LibGraphicsSpy:      "gapid/gapii/cc/libgapii",
-	LibVirtualSwapChain: "gapid/core/vulkan/vk_virtual_swapchain/cc/libVkLayer_VirtualSwapchain",
-	LibCPUTiming:        "gapid/core/vulkan/vk_api_timing_layer/cc/libVkLayer_CPUTiming",
-	LibMemoryTracker:    "gapid/core/vulkan/vk_memory_tracker_layer/cc/libVkLayer_MemoryTracker",
+	LibGraphicsSpy:        "gapid/gapii/cc/libgapii",
+	LibVirtualSwapChain:   "gapid/core/vulkan/vk_virtual_swapchain/cc/libVkLayer_VirtualSwapchain",
+	LibCPUTiming:          "gapid/core/vulkan/vk_api_timing_layer/cc/libVkLayer_CPUTiming",
+	LibMemoryTracker:      "gapid/core/vulkan/vk_memory_tracker_layer/cc/libVkLayer_MemoryTracker",
+	LibAdvancePortability: "gapid/core/vulkan/vk_advance_portability_layer/cc/libVkLayer_advance_portability",
 }
 
 var libTypeToJsonPath = map[LibraryType]string{
-	LibGraphicsSpy:      "gapid/gapii/vulkan/vk_graphics_spy/cc/GraphicsSpyLayer.json",
-	LibVirtualSwapChain: "gapid/core/vulkan/vk_virtual_swapchain/cc/VirtualSwapchainLayer.json",
-	LibCPUTiming:        "gapid/core/vulkan/vk_api_timing_layer/cc/CPUTimingLayer.json",
-	LibMemoryTracker:    "gapid/core/vulkan/vk_memory_tracker_layer/cc/MemoryTrackerLayer.json",
+	LibGraphicsSpy:        "gapid/gapii/vulkan/vk_graphics_spy/cc/GraphicsSpyLayer.json",
+	LibVirtualSwapChain:   "gapid/core/vulkan/vk_virtual_swapchain/cc/VirtualSwapchainLayer.json",
+	LibCPUTiming:          "gapid/core/vulkan/vk_api_timing_layer/cc/CPUTimingLayer.json",
+	LibMemoryTracker:      "gapid/core/vulkan/vk_memory_tracker_layer/cc/MemoryTrackerLayer.json",
+	LibAdvancePortability: "gapid/core/vulkan/vk_advance_portability_layer/cc/VkLayer_advance_portability.json",
 }
 
 // RunfilesLayout creates a new layout based on the given runfiles manifest.
