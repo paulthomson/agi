@@ -134,6 +134,6 @@ namespace advance_portability {
     };
 
     void vkGetPhysicalDeviceFeatures(PFN_vkGetPhysicalDeviceFeatures next, VkPhysicalDevice physicalDevice, VkPhysicalDeviceFeatures* pFeatures) {
-        *pFeatures = features;
+        next(physicalDevice, pFeatures);
     }
 } // namespace advance_portability
