@@ -171,9 +171,9 @@ func StartOnDevice(ctx context.Context, name string, opts StartOptions) (int, er
 			In(opts.WorkingDir).
 			Env(opts.Env).
 			Capture(stdout, opts.Stderr)
-		if opts.Verbose {
-			cmd = cmd.Verbose()
-		}
+			//if opts.Verbose {
+		cmd = cmd.Verbose()
+		//}
 		errChan <- cmd.Run(ctx)
 	})
 	if !opts.IgnorePort {

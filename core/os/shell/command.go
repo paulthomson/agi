@@ -118,7 +118,7 @@ func (cmd Cmd) Start(ctx context.Context) (Process, error) {
 	}
 	// build our stdout and stderr handling
 	var logStdout, logStderr io.WriteCloser
-	if cmd.Verbosity {
+	if true {
 		ctx := log.PutProcess(ctx, filepath.Base(cmd.Name))
 		logStdout = log.From(ctx).Writer(log.Info)
 		defer logStdout.Close()
@@ -136,7 +136,7 @@ func (cmd Cmd) Start(ctx context.Context) (Process, error) {
 		}
 	}
 	// Ready to start
-	if cmd.Verbosity {
+	if true {
 		extra := ""
 		if cmd.Dir != "" {
 			extra = fmt.Sprintf(" In %v", cmd.Dir)
