@@ -137,7 +137,7 @@ func Start(ctx context.Context, p *android.InstalledPackage, a *android.Activity
 
 	if useLayers {
 		log.I(ctx, "Setting up Layer")
-		cu, err := android.SetupLayers(ctx, d, p.Name, []string{gapidapk.PackageName(abi)}, []string{gapidapk.LayerName(isVulkan)}, isVulkan)
+		cu, err := android.SetupLayers(ctx, d, p.Name, []string{gapidapk.PackageName(abi)}, []string{gapidapk.LayerName(isVulkan), "VK_LAYER_ADVANCE_portability"}, isVulkan)
 		if err != nil {
 			return nil, cleanup.Invoke(ctx), log.Err(ctx, err, "Setting up the layer")
 		}
