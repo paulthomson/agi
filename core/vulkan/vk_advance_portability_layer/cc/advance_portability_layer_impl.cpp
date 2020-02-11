@@ -15,124 +15,13 @@
  *
  */
 
-#include "core/vulkan/vk_advance_portability_layer/cc/layer.h"
-
 #include <cassert>
+
+#include "core/vulkan/vk_advance_portability_layer/cc/advance_portability_layer_structs.h"
+#include "core/vulkan/vk_advance_portability_layer/cc/layer.h"
 
 namespace advance_portability {
 
-VkPhysicalDeviceFeatures features = {
-    // robustBufferAccess
-    VK_TRUE,
-    // fullDrawIndexUint32
-    VK_TRUE,
-    // imageCubeArray
-    VK_TRUE,
-    // independentBlend
-    VK_TRUE,
-    // geometryShader
-    VK_TRUE,
-    // tessellationShader
-    VK_TRUE,
-    // sampleRateShading
-    VK_TRUE,
-    // dualSrcBlend
-    VK_FALSE,
-    // logicOp
-    VK_FALSE,
-    // multiDrawIndirect
-    VK_FALSE,
-    // drawIndirectFirstInstance
-    VK_TRUE,
-    // depthClamp
-    VK_FALSE,
-    // depthBiasClamp
-    VK_TRUE,
-    // fillModeNonSolid
-    VK_FALSE,
-    // depthBounds
-    VK_FALSE,
-    // wideLines
-    VK_FALSE,
-    // largePoints
-    VK_TRUE,
-    // alphaToOne
-    VK_FALSE,
-    // multiViewport
-    VK_FALSE,
-    // samplerAnisotropy
-    VK_FALSE,
-    // textureCompressionETC2
-    VK_TRUE,
-    // textureCompressionASTC_LDR
-    VK_TRUE,
-    // textureCompressionBC
-    VK_FALSE,
-    // occlusionQueryPrecise
-    VK_TRUE,
-    // pipelineStatisticsQuery
-    VK_FALSE,
-    // vertexPipelineStoresAndAtomics
-    VK_FALSE,
-    // fragmentStoresAndAtomics
-    VK_TRUE,
-    // shaderTessellationAndGeometryPointSize
-    VK_FALSE,
-    // shaderImageGatherExtended
-    VK_TRUE,
-    // shaderStorageImageExtendedFormats
-    VK_TRUE,
-    // shaderStorageImageMultisample
-    VK_FALSE,
-    // shaderStorageImageReadWithoutFormat
-    VK_TRUE,
-    // shaderStorageImageWriteWithoutFormat
-    VK_TRUE,
-    // shaderUniformBufferArrayDynamicIndexing
-    VK_TRUE,
-    // shaderSampledImageArrayDynamicIndexing
-    VK_TRUE,
-    // shaderStorageBufferArrayDynamicIndexing
-    VK_TRUE,
-    // shaderStorageImageArrayDynamicIndexing
-    VK_TRUE,
-    // shaderClipDistance
-    VK_FALSE,
-    // shaderCullDistance
-    VK_FALSE,
-    // shaderFloat64
-    VK_FALSE,
-    // shaderInt64
-    VK_FALSE,
-    // shaderInt16
-    VK_TRUE,
-    // shaderResourceResidency
-    VK_FALSE,
-    // shaderResourceMinLod
-    VK_FALSE,
-    // sparseBinding
-    VK_FALSE,
-    // sparseResidencyBuffer
-    VK_FALSE,
-    // sparseResidencyImage2D
-    VK_FALSE,
-    // sparseResidencyImage3D
-    VK_FALSE,
-    // sparseResidency2Samples
-    VK_FALSE,
-    // sparseResidency4Samples
-    VK_FALSE,
-    // sparseResidency8Samples
-    VK_FALSE,
-    // sparseResidency16Samples
-    VK_FALSE,
-    // sparseResidencyAliased
-    VK_FALSE,
-    // variableMultisampleRate
-    VK_FALSE,
-    // inheritedQueries
-    VK_FALSE,
-};
 
 void vkGetPhysicalDeviceFeatures(PFN_vkGetPhysicalDeviceFeatures next,
                                  VkPhysicalDevice physicalDevice,
