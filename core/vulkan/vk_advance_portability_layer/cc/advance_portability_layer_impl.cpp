@@ -56,6 +56,7 @@ VkResult vkEnumeratePhysicalDevices(PFN_vkEnumeratePhysicalDevices next,
     return VK_SUCCESS;
   }
 
+
   if (*pPhysicalDeviceCount == 0) {
     return VK_INCOMPLETE;
   }
@@ -79,10 +80,22 @@ VkResult vkEnumeratePhysicalDevices(PFN_vkEnumeratePhysicalDevices next,
 void vkGetPhysicalDeviceFormatProperties(
     PFN_vkGetPhysicalDeviceFormatProperties next,
     VkPhysicalDevice physicalDevice, VkFormat format,
-    VkFormatProperties* pFormatProperties) {}
+    VkFormatProperties* pFormatProperties) {
+  for (const auto& format_property : format_properties) {
+    if (format_property.format == format) {
+      *pFormatProperties = format_property.properties;
+      return;
+    }
+  }
+  *pFormatProperties = VkFormatProperties{};
+}
 
-void vkGetPhysicalDeviceFeatures2(PFN_vkGetPhysicalDeviceFeatures2 next,
-                                  VkPhysicalDevice physicalDevice,
-                                  VkPhysicalDeviceFeatures2* pFeatures) {}
+void vkGetPhysicalDeviceMemoryProperties(
+    PFN_vkGetPhysicalDeviceMemoryProperties next,
+    VkPhysicalDevice physicalDevice,
+    VkPhysicalDeviceMemoryProperties* pMemoryProperties) {
+
+  *pMemoryProperties = physical_device_memory_properties;
+}
 
 }  // namespace advance_portability

@@ -1661,5 +1661,44 @@ VkFormatPropertiesWrapper format_properties[] = {
   },
 };
 
+VkPhysicalDeviceMemoryProperties physical_device_memory_properties = {
+  // memoryTypeCount
+  3,
+  // memoryTypes
+  {
+    {
+      // propertyFlags
+      VkMemoryPropertyFlags(1),
+      // heapIndex
+      0,
+    },
+    {
+      // propertyFlags
+      VkMemoryPropertyFlags(7),
+      // heapIndex
+      0,
+    },
+    {
+      // propertyFlags
+      VkMemoryPropertyFlags(11),
+      // heapIndex
+      0,
+    },
+    {},
+  },
+  // memoryHeapCount
+  1,
+  // memoryHeaps
+  {
+    {
+      // size
+      VkDeviceSize(1073741824),
+      // flags
+      VkMemoryHeapFlags(1),
+    },
+    {},
+  },
+};
+
 }  // namespace advance_portability
 
