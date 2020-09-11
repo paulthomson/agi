@@ -22,6 +22,7 @@
 #include <fstream>
 #include <functional>
 #include <iomanip>
+#include <sstream>
 #include <string>
 #include <thread>
 
@@ -47,8 +48,14 @@ int32_t FindMemoryType(
 void null_callback(void*, uint8_t*, size_t) {}
 
 // Android property names must be under 32 characters in Android N and below.
+
+// E.g. "/tmp/screenshots"
 const char* kImageDumpPathEnv = "IMAGE_DUMP_PATH";
 const char* kImageDumpPathAndroidProp = "debug.vsc.image_dump_path";
+
+// E.g. "3 0 49" (dump frames 0, 3, 49).
+const char* kFramesToDumpEnv = "VIRTUAL_SWAPCHAIN_FRAMES_TO_DUMP";
+const char* kFramesToDumpAndroidProp = "debug.vsc.frames_to_dump";
 
 void WritePngFile(std::unique_ptr<uint8_t[]> image_data, size_t size,
                   std::string file_name, uint32_t width, uint32_t height,
@@ -290,6 +297,24 @@ VirtualSwapchain::VirtualSwapchain(
     free_images_.push_back(i);
   }
 
+  GetParameter(kImageDumpPathEnv, kImageDumpPathAndroidProp, &image_dump_dir_);
+
+  // Populate frames_to_dump_ from the environment.
+  std::string frames;
+  GetParameter(kFramesToDumpEnv, kFramesToDumpAndroidProp, &frames);
+
+  std::istringstream ss(frames);
+
+  while (!ss.eof()) {
+    uint32_t frame_number;
+    ss >> frame_number;
+    if (ss.fail()) {
+      write_warning("Failed to parse frames to dump.");
+      break;
+    }
+    frames_to_dump_.insert(frame_number);
+  }
+
 #ifdef _WIN32
   thread_ = CreateThread(NULL, 0,
                          [](void* data) -> DWORD {
@@ -305,7 +330,6 @@ VirtualSwapchain::VirtualSwapchain(
                  },
                  this);
 #endif
-  GetParameter(kImageDumpPathEnv, kImageDumpPathAndroidProp, &image_dump_dir_);
 }
 
 void VirtualSwapchain::Destroy(const VkAllocationCallbacks* pAllocator) {
@@ -349,12 +373,13 @@ void VirtualSwapchain::DumpImageToFile(uint8_t* image_data, size_t size) {
 }
 
 void VirtualSwapchain::CopyThreadFunc() {
+  uint32_t frame_number = 0;
   while (true) {
     uint32_t pending_image = 0;
     while (true) {
       std::unique_lock<threading::mutex> pl(pending_images_lock_);
 
-      if (pending_images_.empty() == false) {
+      if (!pending_images_.empty()) {
         pending_image = pending_images_.front();
         pending_images_.pop_front();
 
@@ -376,37 +401,41 @@ void VirtualSwapchain::CopyThreadFunc() {
     EXPECT_SUCCESS(functions_->vkResetFences(
         device_, 1, &image_data_[pending_image].fence_));
 
-    void* mapped_value;
-    EXPECT_SUCCESS(functions_->vkMapMemory(
-        device_, image_data_[pending_image].buffer_memory_, 0, VK_WHOLE_SIZE, 0,
-        &mapped_value));
+    if (frames_to_dump_.empty() || frames_to_dump_.count(frame_number)) {
+      void* mapped_value;
+      EXPECT_SUCCESS(functions_->vkMapMemory(
+          device_, image_data_[pending_image].buffer_memory_, 0, VK_WHOLE_SIZE,
+          0, &mapped_value));
 
-    VkMappedMemoryRange range{
-        VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE,      // sType
-        nullptr,                                    // pNext
-        image_data_[pending_image].buffer_memory_,  // memory
-        0,                                          // offset
-        VK_WHOLE_SIZE,                              // size
-    };
+      VkMappedMemoryRange range{
+          VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE,      // sType
+          nullptr,                                    // pNext
+          image_data_[pending_image].buffer_memory_,  // memory
+          0,                                          // offset
+          VK_WHOLE_SIZE,                              // size
+      };
 
-    EXPECT_SUCCESS(
-        functions_->vkInvalidateMappedMemoryRanges(device_, 1, &range));
+      EXPECT_SUCCESS(
+          functions_->vkInvalidateMappedMemoryRanges(device_, 1, &range));
 
-    uint32_t length = ImageByteSize();
-    {
-      callback_(callback_user_data_, (uint8_t*)mapped_value, length);
-      if (!image_dump_dir_.empty()) {
-        DumpImageToFile((uint8_t*)mapped_value, length);
+      uint32_t length = ImageByteSize();
+      {
+        callback_(callback_user_data_, (uint8_t*)mapped_value, length);
+        if (!image_dump_dir_.empty()) {
+          DumpImageToFile((uint8_t*)mapped_value, length);
+        }
       }
+
+      functions_->vkUnmapMemory(device_,
+                                image_data_[pending_image].buffer_memory_);
     }
 
-    functions_->vkUnmapMemory(device_,
-                              image_data_[pending_image].buffer_memory_);
     {
       std::unique_lock<threading::mutex> l(free_images_lock_);
       free_images_.push_back(pending_image);
     }
     free_images_condition_.notify_all();
+    ++frame_number;
   }
 }
 

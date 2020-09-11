@@ -24,6 +24,7 @@
 #include <memory>
 #include <mutex>
 #include <string>
+#include <unordered_set>
 #include "base_swapchain.h"
 #include "layer.h"
 
@@ -222,6 +223,10 @@ class VirtualSwapchain {
   // The path to dump the swapchain image to file. This can be set via
   // the environment variable "IMAGE_DUMP_PATH" before replay the trace.
   std::string image_dump_dir_;
+
+  // The frame numbers to dump. We will dump all frames if this is empty.
+  std::unordered_set<uint32_t> frames_to_dump_;
+
   // The number of image dumped.
   uint32_t dumped_frame_count_ = 1;
   // Function to dump the image to dir |image_dump_dir_| if environment
